@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 # Biodesign Digital Health Spezi Web Configurations
 
 [![Build and Test](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/build-and-test.yml)
-[![Deployment](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/main.yml/badge.svg)](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/main.yml)
+[![Deployment](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/deployment.yml/badge.svg)](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/deployment.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10052055.svg)](https://doi.org/10.5281/zenodo.10052055)
 
 ## Getting Started
