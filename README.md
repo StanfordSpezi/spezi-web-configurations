@@ -1,84 +1,60 @@
 <!--
 
-This source file is part of the Stanford Biodesign Digital Health Next.js Template open-source project
+This source file is part of the Stanford Biodesign Digital Health Spezi Web Configurations open-source project
 
-SPDX-FileCopyrightText: 2023 Stanford University and the project authors (see CONTRIBUTORS.md)
+SPDX-FileCopyrightText: 2024 Stanford University and the project authors (see CONTRIBUTORS.md)
 
 SPDX-License-Identifier: MIT
 
 -->
 
-# Biodesign Digital Health Next.js Template
+# Biodesign Digital Health Spezi Web Configurations
 
-[![Build and Test](https://github.com/StanfordBDHG/NextJSTemplate/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/StanfordBDHG/NextJSTemplate/actions/workflows/build-and-test.yml)
-[![Deployment](https://github.com/StanfordBDHG/NextJSTemplate/actions/workflows/main.yml/badge.svg)](https://github.com/StanfordBDHG/NextJSTemplate/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/StanfordBDHG/NextJSTemplate/graph/badge.svg?token=dfQW5eZ2up)](https://codecov.io/gh/StanfordBDHG/NextJSTemplate)
+[![Build and Test](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/build-and-test.yml)
+[![Deployment](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/main.yml/badge.svg)](https://github.com/StanfordSpezi/spezi-web-configurations/actions/workflows/main.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10052055.svg)](https://doi.org/10.5281/zenodo.10052055)
-
-## How To Use This Template
-
-The template repository contains a template for a Next.js project providing automated GitHub Actions and setups for code linting, testing & test coverage reports, docker deployments, a docker compose setup, local packages for modular deployment, and documentation generation & deployment.
-
-Follow these steps to customize it to your needs:
-
-1. Rename the Next.js project.
-2. Modify, add, or remove the local packages found at `/packages/*` to separate code into smaller modules.
-3. Add dependencies and edit the project in `/app` and the local Node packages.
-
-The main application is automatically deployed to https://stanfordbdhg.github.io/NextJSTemplate/.
-
-The documentation of the local packages is automatically deployed to https://stanfordbdhg.github.io/NextJSTemplate/docs.
 
 ## Getting Started
 
-You can run the project using the following command. You will need to install Node.js and npm, e.g., using [homebrew (recommended for macOS)](https://formulae.brew.sh/formula/node) or the official [Node.js installer](https://nodejs.org/en/download).
+A shared linting and formatter configurations. Uses Prettier and ESLint. Pre-configured for you to easily plug into your codebases. 
 
-1. Install All Dependencies
+Configurations are opinionated and strict. We aim to catch as many possible mistakes or elements we consider harmful practices early. Some rules are meant to be broken once in a while, with an explanation comment around them.
 
-```bash
-npm install
-```
+### Installation
 
-1. Start the Next.js Application
+Install dependencies:
 
 ```bash
-npm run dev
+npm install --save-dev prettier eslint @stanfordbdhg/spezi-web-configurations`
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.<!-- markdown-link-check-disable-line -->
+Create `eslint.config.js` file:
 
-You can edit the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```javascript
+const { getEslintConfig } = require('@stanfordbdhg/spezi-web-configurations')
 
-## Docker
+module.exports = getEslintConfig({ tsconfigRootDir: __dirname })
+```
 
-1. [Install Docker](https://docs.docker.com/get-docker/) on your machine.
-2. Build the image and run the docker compose setup: `docker compose -f docker-compose-development.yml up`.
+Create `.prettierrc.js` file:
 
-You can view your images created with `docker images`.
+```javascript
+const { prettierConfig } = require("@stanfordbdhg/spezi-web-configurations");
 
-Open [http://localhost](http://localhost) with your browser to see the result. You can visit [http://localhost:8080](http://localhost:8080) to see the reverse proxy setup before the main application.<!-- markdown-link-check-disable-line -->
+module.exports = prettierConfig;
+```
 
-The `docker-compose.yml` setup contains a production-ready setup using a reverse proxy.
+Now, when you run `eslint . --fix`, code is going to be linted and formatted. 
 
-Every version of the application on the `main` branch is automatically packaged into docker images using the `main` tag. Every release is also published using the `latest` and respective version tags.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
 ## License
 
-This project is licensed under the MIT License. See [Licenses](https://github.com/StanfordBDHG/NextJSTemplate/tree/main/LICENSES) for more information.
+This project is licensed under the MIT License. See [Licenses](https://github.com/StanfordSpezi/spezi-web-configurations/tree/main/LICENSES) for more information.
 
 ## Contributors
 
 This project is developed as part of the Stanford Byers Center for Biodesign at Stanford University.
-See [CONTRIBUTORS.md](https://github.com/StanfordBDHG/NextJSTemplate/tree/main/CONTRIBUTORS.md) for a full list of all Next.js Template contributors.
+See [CONTRIBUTORS.md](https://github.com/StanfordSpezi/spezi-web-configurations/tree/main/CONTRIBUTORS.md) for a full list of all Next.js Template contributors.
 
 ![Stanford Byers Center for Biodesign Logo](https://raw.githubusercontent.com/StanfordBDHG/.github/main/assets/biodesign-footer-light.png#gh-light-mode-only)
 ![Stanford Byers Center for Biodesign Logo](https://raw.githubusercontent.com/StanfordBDHG/.github/main/assets/biodesign-footer-dark.png#gh-dark-mode-only)
