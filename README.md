@@ -25,13 +25,13 @@ Configurations are opinionated and strict. We aim to catch as many possible mist
 Install dependencies:
 
 ```bash
-npm install --save-dev prettier eslint @stanfordbdhg/spezi-web-configurations`
+npm install --save-dev prettier eslint @stanfordspezi/spezi-web-configurations`
 ```
 
 Create `eslint.config.js` file:
 
 ```javascript
-const { getEslintConfig } = require('@stanfordbdhg/spezi-web-configurations')
+const { getEslintConfig } = require('@stanfordspezi/spezi-web-configurations')
 
 module.exports = getEslintConfig({ tsconfigRootDir: __dirname })
 ```
@@ -39,7 +39,7 @@ module.exports = getEslintConfig({ tsconfigRootDir: __dirname })
 Create `.prettierrc.js` file:
 
 ```javascript
-const { prettierConfig } = require("@stanfordbdhg/spezi-web-configurations");
+const { prettierConfig } = require("@stanfordspezi/spezi-web-configurations");
 
 module.exports = prettierConfig;
 ```

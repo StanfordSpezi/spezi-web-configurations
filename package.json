@@ -1,5 +1,5 @@
 {
-  "name": "@stanfordbdhg/spezi-web-configurations",
+  "name": "@stanfordspezi/spezi-web-configurations",
   "private": true,
   "description": "Stanford Biodesign Digital Health Spezi Web Configurations",
   "keywords": [
@@ -7,7 +7,11 @@
     "Biodesign",
     "Spezi",
     "Web",
-    "Configurations"
+    "Configurations",
+    "ESLint",
+    "Prettier",
+    "linting",
+    "formatting"
   ],
   "files": [
     "dist",
