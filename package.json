@@ -27,7 +27,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "parcel build",
-    "dev": "vite",
+    "dev": "parcel watch",
     "lint": "eslint .",
     "lint:ci": "eslint --output-file eslint_report.json --format json .",
     "lint:fix": "eslint . --fix"
