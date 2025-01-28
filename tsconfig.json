@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ESNext",
+    "lib": ["esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -12,20 +11,8 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"],
-  "typedocOptions": {
-    "entryPoints": ["packages/*"],
-    "name": "Stanford Biodesign Digital Health Next.js Template",
-    "entryPointStrategy": "packages",
-    "includeVersion": false
-  }
 }
