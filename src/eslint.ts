@@ -164,9 +164,11 @@ export const getEslintConfig = ({
     eslintPluginPrettierRecommended,
     {
       files: [
-        "app/**/*.ts?(x)",
-        "**/*.stories.ts?(x)",
+        "playwright.config.ts",
+        "tailwind.config.ts",
         "vite.config.ts",
+        "{app,pages}/**/*.ts?(x)",
+        "**/*.stories.ts?(x)",
         ".storybook/**/*.ts?(x)",
       ],
       rules: {
