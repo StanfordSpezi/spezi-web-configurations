@@ -25,7 +25,7 @@ Configurations are opinionated and strict. We aim to catch as many possible mist
 Install dependencies:
 
 ```bash
-npm install --save-dev prettier eslint @stanfordspezi/spezi-web-configurations`
+npm install --save-dev prettier eslint @stanfordspezi/spezi-web-configurations
 ```
 
 Create `eslint.config.js` file:
