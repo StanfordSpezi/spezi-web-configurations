@@ -48,10 +48,10 @@ export const getEslintConfig = ({
     },
     {
       files: [
-        "eslint.config.?(c)js",
-        ".prettierrc.?(c)js",
-        "postcss.config.?(c)js",
-        "tailwind.config.?(c)js",
+        "**/eslint.config.?(c)js",
+        "**/.prettierrc.?(c)js",
+        "**/postcss.config.?(c)js",
+        "**/tailwind.config.?(c)js",
       ],
       languageOptions: {
         globals: globals.node,
@@ -164,12 +164,12 @@ export const getEslintConfig = ({
     eslintPluginPrettierRecommended,
     {
       files: [
-        "playwright.config.ts",
-        "tailwind.config.ts",
-        "vite.config.ts",
-        "{app,pages}/**/*.ts?(x)",
+        "{app,pages}/**/*.ts?(x)", // app or pages directories for Next codebases
+        "**/playwright.config.ts",
+        "**/tailwind.config.ts",
+        "**/vite.config.ts",
         "**/*.stories.ts?(x)",
-        ".storybook/**/*.ts?(x)",
+        "**/.storybook/**/*.ts?(x)",
       ],
       rules: {
         "import/no-default-export": "off",
