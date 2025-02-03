@@ -18,12 +18,20 @@ const importPlugin = require("eslint-plugin-import");
 type EslintConfigParams = {
   /**
    * Root of the project, where tsconfig exists.
-   * Most likely it's going to be `import.meta.dirname` or `__dirname`
+   * Most likely it's going to be `import.meta.dirname` or `__dirname`.
    * */
   tsconfigRootDir: string;
+  /**
+   * List of TypeScript configuration files.
+   * Required if there are multiple files with references.
+   * */
+  tsConfigsDirs?: string[];
 };
 
-export const getEslintConfig = ({ tsconfigRootDir }: EslintConfigParams) =>
+export const getEslintConfig = ({
+  tsconfigRootDir,
+  tsConfigsDirs = [],
+}: EslintConfigParams) =>
   tseslint.config(
     {
       ignores: ["dist", "docs", "out", "coverage"],
@@ -33,7 +41,9 @@ export const getEslintConfig = ({ tsconfigRootDir }: EslintConfigParams) =>
     eslint.configs.recommended,
     {
       settings: {
-        "import/resolver": { typescript: { project: ["./tsconfig.json"] } },
+        "import/resolver": {
+          typescript: { project: ["./tsconfig.json", ...tsConfigsDirs] },
+        },
       },
     },
     {
