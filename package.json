@@ -48,7 +48,7 @@
     "eslint": "^9"
   },
   "engines": {
-    "node": "22"
+    "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
   },
   "devDependencies": {
     "@parcel/packager-ts": "^2.13.3",
