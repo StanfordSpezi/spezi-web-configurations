@@ -167,7 +167,7 @@ export const getEslintConfig = ({
           {
             allowedNames: [],
             allowNamedFunctions: false,
-            allowObjectProperties: false,
+            allowObjectProperties: true,
             classPropertiesAllowed: false,
             disallowPrototype: false,
             returnStyle: "unchanged",
