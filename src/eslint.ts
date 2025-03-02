@@ -10,6 +10,8 @@ import globals from "globals";
 // @ts-ignore
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
+// @ts-ignore
+import * as preferArrow from "eslint-plugin-prefer-arrow-functions";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 // require is necessary to prevent Parcel from treating it as ESM
 // @ts-ignore
@@ -73,6 +75,7 @@ export const getEslintConfig = ({
       },
       plugins: {
         "react-hooks": reactHooks,
+        "prefer-arrow-functions": preferArrow,
       },
       rules: {
         "import/order": [
@@ -159,6 +162,18 @@ export const getEslintConfig = ({
         "react/no-unescaped-entities": "off",
         // notFound in Tanstack Router is thrown
         "@typescript-eslint/only-throw-error": "off",
+        "prefer-arrow-functions/prefer-arrow-functions": [
+          "warn",
+          {
+            allowedNames: [],
+            allowNamedFunctions: false,
+            allowObjectProperties: true,
+            classPropertiesAllowed: false,
+            disallowPrototype: false,
+            returnStyle: "unchanged",
+            singleReturnOnly: false,
+          },
+        ],
       },
     },
     eslintPluginPrettierRecommended,
