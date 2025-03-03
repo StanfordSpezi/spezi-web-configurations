@@ -10,6 +10,7 @@ import globals from "globals";
 // @ts-ignore
 import reactHooks from "eslint-plugin-react-hooks";
 import tseslint from "typescript-eslint";
+import reactPlugin from "eslint-plugin-react";
 // @ts-ignore
 import * as preferArrow from "eslint-plugin-prefer-arrow-functions";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
@@ -159,7 +160,6 @@ export const getEslintConfig = ({
           // numbers and booleans are fine in template strings
           { allowNumber: true, allowBoolean: true },
         ],
-        "react/no-unescaped-entities": "off",
         // notFound in Tanstack Router is thrown
         "@typescript-eslint/only-throw-error": "off",
         "prefer-arrow-functions/prefer-arrow-functions": [
@@ -177,6 +177,32 @@ export const getEslintConfig = ({
       },
     },
     eslintPluginPrettierRecommended,
+    {
+      ...reactPlugin.configs.flat.recommended,
+      settings: {
+        react: {
+          version: "detect",
+        },
+      },
+      rules: {
+        ...reactPlugin.configs.flat.recommended.rules,
+        "react/jsx-curly-brace-presence": [
+          "warn",
+          { props: "never", children: "never", propElementValues: "always" },
+        ],
+        "react/no-unescaped-entities": "off",
+        "react/jsx-fragments": ["warn", "syntax"],
+        "react/prop-types": "off",
+        "react/self-closing-comp": [
+          "warn",
+          {
+            component: true,
+            html: false,
+          },
+        ],
+      },
+    },
+    reactPlugin.configs.flat["jsx-runtime"],
     {
       files: [
         "{app,pages}/**/*.ts?(x)", // app or pages directories for Next codebases
