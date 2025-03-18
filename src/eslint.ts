@@ -9,7 +9,9 @@ import eslint from "@eslint/js";
 import globals from "globals";
 // @ts-ignore
 import reactHooks from "eslint-plugin-react-hooks";
-import tseslint from "typescript-eslint";
+import tseslint, {
+  type InfiniteDepthConfigWithExtends,
+} from "typescript-eslint";
 import reactPlugin from "eslint-plugin-react";
 // @ts-ignore
 import * as preferArrow from "eslint-plugin-prefer-arrow-functions";
@@ -34,14 +36,29 @@ type EslintConfigParams = {
 export const getEslintConfig = ({
   tsconfigRootDir,
   tsConfigsDirs = [],
-}: EslintConfigParams) =>
-  tseslint.config(
-    {
-      ignores: ["dist", "docs", "out", "coverage"],
-    },
+}: EslintConfigParams) => {
+  /**
+   * Completely ignores these directories
+   * */
+  const ignoredDirs: InfiniteDepthConfigWithExtends = {
+    ignores: ["dist", "docs", "out", "coverage"],
+  };
+
+  /**
+   * Basic recommended ESLint rules with overrides
+   * */
+  const eslintRules: InfiniteDepthConfigWithExtends[] = [
+    eslint.configs.recommended,
+    { rules: { "no-empty-pattern": "off" } },
+  ];
+
+  /*
+   * Rules for import plugin.
+   * Auto rules reordering, prevents cycles, forces lack of extensions.
+   * */
+  const importRules: InfiniteDepthConfigWithExtends[] = [
     importPlugin.flatConfigs.recommended,
     importPlugin.flatConfigs.typescript,
-    eslint.configs.recommended,
     {
       settings: {
         "import/resolver": {
@@ -50,34 +67,7 @@ export const getEslintConfig = ({
       },
     },
     {
-      files: [
-        "**/eslint.config.?(c)js",
-        "**/.prettierrc.?(c)js",
-        "**/postcss.config.?(c)js",
-        "**/tailwind.config.?(c)js",
-      ],
-      languageOptions: {
-        globals: globals.node,
-      },
-    },
-    {
-      extends: [
-        tseslint.configs.strictTypeChecked,
-        tseslint.configs.stylisticTypeChecked,
-      ],
-      files: ["**/*.{ts,tsx}"],
-      languageOptions: {
-        ecmaVersion: 2020,
-        globals: globals.browser,
-        parserOptions: {
-          projectService: true,
-          tsconfigRootDir,
-        },
-      },
-      plugins: {
-        "react-hooks": reactHooks,
-        "prefer-arrow-functions": preferArrow,
-      },
+      files: ["**/*.{js,jsx,ts,tsx}"],
       rules: {
         "import/order": [
           "warn",
@@ -114,69 +104,127 @@ export const getEslintConfig = ({
             "prefer-inline": true,
           },
         ],
-        "@typescript-eslint/consistent-type-imports": [
-          "warn",
-          {
-            prefer: "type-imports",
-            fixStyle: "inline-type-imports",
-            disallowTypeAnnotations: false,
-          },
-        ],
-        "@typescript-eslint/no-misused-promises": [
-          "error",
-          {
-            checksVoidReturn: {
-              attributes: false,
-            },
-          },
-        ],
         // false negatives
         "import/namespace": ["off"],
-        "no-empty-pattern": "off",
-        "@typescript-eslint/no-empty-object-type": [
-          "error",
-          // `interface SpecificVariantProps extends VariantProps {}` is fine
-          { allowInterfaces: "with-single-extends" },
-        ],
-        // make sure to `await` inside try…catch
-        "@typescript-eslint/return-await": ["error", "in-try-catch"],
-        "@typescript-eslint/no-confusing-void-expression": [
-          "error",
-          { ignoreArrowShorthand: true },
-        ],
-        // empty interfaces are fine, e.g. React component that extends other component, but with no additional props
-        "@typescript-eslint/no-empty-interface": "off",
-        "@typescript-eslint/array-type": [
-          "warn",
-          { default: "array-simple", readonly: "array-simple" },
-        ],
-        // allow unused vars prefixed with `_`
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-        ],
-        "@typescript-eslint/restrict-template-expressions": [
-          "error",
-          // numbers and booleans are fine in template strings
-          { allowNumber: true, allowBoolean: true },
-        ],
-        // notFound in Tanstack Router is thrown
-        "@typescript-eslint/only-throw-error": "off",
-        "prefer-arrow-functions/prefer-arrow-functions": [
-          "warn",
-          {
-            allowedNames: [],
-            allowNamedFunctions: false,
-            allowObjectProperties: true,
-            classPropertiesAllowed: false,
-            disallowPrototype: false,
-            returnStyle: "unchanged",
-            singleReturnOnly: false,
-          },
-        ],
       },
     },
-    eslintPluginPrettierRecommended,
+  ];
+
+  /**
+   * Injects Node globals to Node tooling
+   * */
+  const nodeGlobals: InfiniteDepthConfigWithExtends = {
+    files: [
+      "**/eslint.config.?(c)js",
+      "**/.prettierrc.?(c)js",
+      "**/postcss.config.?(c)js",
+      "**/tailwind.config.?(c)js",
+    ],
+    languageOptions: {
+      globals: globals.node,
+    },
+  };
+
+  /**
+   * Enforces arrow functions instead of named function
+   * Automatically replaces every named function with an arrow function.
+   * */
+  const preferArrowFunctions: InfiniteDepthConfigWithExtends = {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    plugins: {
+      "prefer-arrow-functions": preferArrow,
+    },
+    rules: {
+      "prefer-arrow-functions/prefer-arrow-functions": [
+        "warn",
+        {
+          allowedNames: [],
+          allowNamedFunctions: false,
+          allowObjectProperties: true,
+          classPropertiesAllowed: false,
+          disallowPrototype: false,
+          returnStyle: "unchanged",
+          singleReturnOnly: false,
+        },
+      ],
+    },
+  };
+
+  /**
+   * Configures TypeScript ESLint rules.
+   * This config is very strict, some repositories might need overrides.
+   *
+   * It relies on TSC type-checking, which might slow down linting for large codebases.
+   * Read more: https://typescript-eslint.io/getting-started/typed-linting/
+   * */
+  const tslint: InfiniteDepthConfigWithExtends = {
+    extends: [
+      tseslint.configs.strictTypeChecked,
+      tseslint.configs.stylisticTypeChecked,
+    ],
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir,
+      },
+    },
+    rules: {
+      "@typescript-eslint/consistent-type-imports": [
+        "warn",
+        {
+          prefer: "type-imports",
+          fixStyle: "inline-type-imports",
+          disallowTypeAnnotations: false,
+        },
+      ],
+      "@typescript-eslint/no-misused-promises": [
+        "error",
+        {
+          checksVoidReturn: {
+            attributes: false,
+          },
+        },
+      ],
+      "@typescript-eslint/no-empty-object-type": [
+        "error",
+        // `interface SpecificVariantProps extends VariantProps {}` is fine
+        { allowInterfaces: "with-single-extends" },
+      ],
+      // make sure to `await` inside try…catch
+      "@typescript-eslint/return-await": ["error", "in-try-catch"],
+      "@typescript-eslint/no-confusing-void-expression": [
+        "error",
+        { ignoreArrowShorthand: true },
+      ],
+      // empty interfaces are fine, e.g. React component that extends other component, but with no additional props
+      "@typescript-eslint/no-empty-interface": "off",
+      "@typescript-eslint/array-type": [
+        "warn",
+        { default: "array-simple", readonly: "array-simple" },
+      ],
+      // allow unused vars prefixed with `_`
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+      "@typescript-eslint/restrict-template-expressions": [
+        "error",
+        // numbers and booleans are fine in template strings
+        { allowNumber: true, allowBoolean: true },
+      ],
+      // notFound in Tanstack Router is thrown
+      "@typescript-eslint/only-throw-error": "off",
+    },
+  };
+
+  /**
+   * Configures react, react hooks plugin and customized rules
+   * */
+  const reactPlugins: InfiniteDepthConfigWithExtends[] = [
+    reactHooks.configs["recommended-latest"],
     {
       ...reactPlugin.configs.flat.recommended,
       settings: {
@@ -203,17 +251,39 @@ export const getEslintConfig = ({
       },
     },
     reactPlugin.configs.flat["jsx-runtime"],
-    {
-      files: [
-        "{app,pages}/**/*.ts?(x)", // app or pages directories for Next codebases
-        "**/playwright.config.ts",
-        "**/tailwind.config.ts",
-        "**/vite.config.ts",
-        "**/*.stories.ts?(x)",
-        "**/.storybook/**/*.ts?(x)",
-      ],
-      rules: {
-        "import/no-default-export": "off",
-      },
+  ];
+
+  /**
+   * Disables default export rule for tools that need to use it.
+   * */
+  const ignoreDefaultExportRule: InfiniteDepthConfigWithExtends = {
+    files: [
+      "{app,pages}/**/*.ts?(x)", // app or pages directories for Next codebases
+      "**/playwright.config.ts",
+      "**/tailwind.config.ts",
+      "**/vite.config.ts",
+      "**/*.stories.ts?(x)",
+      "**/.storybook/**/*.ts?(x)",
+    ],
+    rules: {
+      "import/no-default-export": "off",
     },
+  };
+
+  /**
+   * Forces correct prettier formatting with auto-fix support
+   * */
+  const prettierPlugin = eslintPluginPrettierRecommended;
+
+  return tseslint.config(
+    ignoredDirs,
+    ...eslintRules,
+    ...importRules,
+    nodeGlobals,
+    tslint,
+    preferArrowFunctions,
+    ...reactPlugins,
+    prettierPlugin,
+    ignoreDefaultExportRule,
   );
+};
