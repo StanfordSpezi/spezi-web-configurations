@@ -31,11 +31,18 @@ type EslintConfigParams = {
    * Required if there are multiple files with references.
    * */
   tsConfigsDirs?: string[];
+  /**
+   * Changes every rule to "warning" instead of "error".
+   * This prevents ESLint to fail if any rule fails.
+   * Use with caution.
+   * */
+  changeEveryRuleToWarning?: boolean;
 };
 
 export const getEslintConfig = ({
   tsconfigRootDir,
   tsConfigsDirs = [],
+  changeEveryRuleToWarning,
 }: EslintConfigParams) => {
   /**
    * Completely ignores these directories
@@ -271,6 +278,22 @@ export const getEslintConfig = ({
   };
 
   /**
+   * Transforms ALL rules severities to 'warn'
+   * */
+  const transformAllRulesToWarn: InfiniteDepthConfigWithExtends = {
+    rules: {},
+    languageOptions: {},
+    processor: {
+      preprocess: (text) => [text],
+      postprocess: (messages) =>
+        messages[0].map((message: any) => ({
+          ...message,
+          severity: 1, // 1 is 'warn', 2 is 'error'
+        })),
+    },
+  };
+
+  /**
    * Forces correct prettier formatting with auto-fix support
    * */
   const prettierPlugin = eslintPluginPrettierRecommended;
@@ -285,5 +308,6 @@ export const getEslintConfig = ({
     ...reactPlugins,
     prettierPlugin,
     ignoreDefaultExportRule,
+    changeEveryRuleToWarning ? transformAllRulesToWarn : {},
   );
 };
