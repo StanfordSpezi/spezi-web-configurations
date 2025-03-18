@@ -34,7 +34,7 @@ type EslintConfigParams = {
   /**
    * Changes every rule to "warning" instead of "error".
    * This prevents ESLint to fail if any rule fails.
-   * Use with caution.
+   * Useful when migrating large codebases. Use with caution.
    * */
   changeEveryRuleToWarning?: boolean;
 };
