@@ -48,7 +48,7 @@ export const getEslintConfig = ({
    * Completely ignores these directories
    * */
   const ignoredDirs: InfiniteDepthConfigWithExtends = {
-    ignores: ["dist", "docs", "out", "coverage"],
+    ignores: ["dist", "docs", "out", "coverage", ".next"],
   };
 
   /**
