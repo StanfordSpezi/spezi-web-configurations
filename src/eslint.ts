@@ -16,6 +16,7 @@ import reactPlugin from "eslint-plugin-react";
 // @ts-ignore
 import * as preferArrow from "eslint-plugin-prefer-arrow-functions";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import type { Linter } from "@typescript-eslint/utils/ts-eslint";
 // require is necessary to prevent Parcel from treating it as ESM
 // @ts-ignore
 const importPlugin = require("eslint-plugin-import");
@@ -178,6 +179,20 @@ export const getEslintConfig = ({
         tsconfigRootDir,
       },
     },
+    processor: {
+      preprocess: (text) => [text],
+      postprocess: (messagesList: Linter.LintMessage[][]) =>
+        messagesList[0].map((message) => {
+          if (message.ruleId === "@typescript-eslint/naming-convention") {
+            return {
+              ...message,
+              message:
+                "Variable name `e` is not allowed. Use more descriptive name: error, event",
+            };
+          }
+          return message;
+        }),
+    },
     rules: {
       "@typescript-eslint/consistent-type-imports": [
         "warn",
@@ -224,6 +239,25 @@ export const getEslintConfig = ({
       ],
       // notFound in Tanstack Router is thrown
       "@typescript-eslint/only-throw-error": "off",
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "variable",
+          format: null,
+          custom: {
+            regex: "^e$",
+            match: false,
+          },
+        },
+        {
+          selector: "parameter",
+          format: null,
+          custom: {
+            regex: "^e$",
+            match: false,
+          },
+        },
+      ],
     },
   };
 
