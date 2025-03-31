@@ -231,6 +231,15 @@ export const getEslintConfig = ({
       ],
       // notFound in Tanstack Router is thrown
       "@typescript-eslint/only-throw-error": "off",
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          name: "react",
+          importNames: ["default"],
+          message:
+            "Import specific types directly: import { ReactNode } from 'react'",
+        },
+      ],
     },
   };
 
