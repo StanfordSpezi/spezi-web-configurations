@@ -49,7 +49,14 @@ export const getEslintConfig = ({
    * Completely ignores these directories
    * */
   const ignoredDirs: InfiniteDepthConfigWithExtends = {
-    ignores: ["dist", "docs", "out", "coverage"],
+    ignores: [
+      "dist",
+      "docs",
+      "out",
+      "coverage",
+      ".next",
+      "**/playwright-report",
+    ],
   };
 
   /**
@@ -239,6 +246,15 @@ export const getEslintConfig = ({
       ],
       // notFound in Tanstack Router is thrown
       "@typescript-eslint/only-throw-error": "off",
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          name: "react",
+          importNames: ["default"],
+          message:
+            "Import specific types directly: import { ReactNode } from 'react'",
+        },
+      ],
       "@typescript-eslint/naming-convention": [
         "error",
         {
