@@ -187,7 +187,7 @@ export const getEslintConfig = ({
             return {
               ...message,
               message:
-                "Variable name `e` is not allowed. Use more descriptive name: error, event",
+                "Variable name `e` is not allowed. Use a more descriptive name like `error` or `event`.",
             };
           }
           return message;
