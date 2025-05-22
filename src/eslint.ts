@@ -321,6 +321,8 @@ export const getEslintConfig = ({
       "**/vite.config.ts",
       "**/*.stories.ts?(x)",
       "**/.storybook/**/*.ts?(x)",
+      "**/.prettierrc.{ts,js}",
+      "**/eslint.config.{ts,js}",
     ],
     rules: {
       "import/no-default-export": "off",
