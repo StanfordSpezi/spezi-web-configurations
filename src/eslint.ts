@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 import eslint from "@eslint/js";
+// @ts-ignore
+import fs from "fs";
 import globals from "globals";
 // @ts-ignore
 import reactHooks from "eslint-plugin-react-hooks";
@@ -38,6 +40,31 @@ type EslintConfigParams = {
    * Useful when migrating large codebases. Use with caution.
    * */
   changeEveryRuleToWarning?: boolean;
+};
+
+type LinterMessage = Linter.LintMessage & {
+  suppressions?: Array<{ kind: string; justification: string }>;
+};
+
+type LinterMessagesList = LinterMessage[][];
+
+const defaultPreprocess = (text: string) => [text];
+
+/**
+ * Checks if a function is used as a component in createFileRoute or other TanStack Router calls.
+ */
+const isCreateFileRouteComponent = (file: string, message: LinterMessage) => {
+  const isRouteFile = [
+    "createFileRoute",
+    "createRootRouteWithContext",
+    "createRootRoute",
+  ].some((route) => file.includes(route));
+  if (!isRouteFile) return false;
+
+  const lines = file.split("\n");
+  const declarationLineContent = lines.at(message.line - 1);
+  const functionName = declarationLineContent?.match(/function\s+(\w+)/)?.at(1);
+  return functionName && file.includes(`component: ${functionName}`);
 };
 
 export const getEslintConfig = ({
@@ -149,6 +176,32 @@ export const getEslintConfig = ({
     plugins: {
       "prefer-arrow-functions": preferArrow,
     },
+    processor: {
+      preprocess: defaultPreprocess,
+      postprocess: (messagesList: LinterMessagesList, filename) => {
+        let file = "";
+        return messagesList[0].map((message) => {
+          if (
+            message.ruleId ===
+              "prefer-arrow-functions/prefer-arrow-functions" &&
+            !message.suppressions
+          ) {
+            file = file || fs.readFileSync(filename, "utf-8");
+
+            if (isCreateFileRouteComponent(file, message)) {
+              message.suppressions = [
+                {
+                  kind: "directive",
+                  justification:
+                    "function declaration is allowed for TanStack Router component",
+                },
+              ];
+            }
+          }
+          return message;
+        });
+      },
+    },
     rules: {
       "prefer-arrow-functions/prefer-arrow-functions": [
         "warn",
@@ -187,8 +240,8 @@ export const getEslintConfig = ({
       },
     },
     processor: {
-      preprocess: (text) => [text],
-      postprocess: (messagesList: Linter.LintMessage[][]) =>
+      preprocess: defaultPreprocess,
+      postprocess: (messagesList: LinterMessagesList) =>
         messagesList[0].map((message) => {
           if (message.ruleId === "@typescript-eslint/naming-convention") {
             return {
