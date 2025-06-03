@@ -16,7 +16,7 @@ import reactPlugin from "eslint-plugin-react";
 // @ts-ignore
 import * as preferArrow from "eslint-plugin-prefer-arrow-functions";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import type { Linter } from "@typescript-eslint/utils/ts-eslint";
+import { Processor } from "@typescript-eslint/utils/ts-eslint";
 // require is necessary to prevent Parcel from treating it as ESM
 // @ts-ignore
 const importPlugin = require("eslint-plugin-import");
@@ -188,8 +188,8 @@ export const getEslintConfig = ({
     },
     processor: {
       preprocess: (text) => [text],
-      postprocess: (messagesList: Linter.LintMessage[][]) =>
-        messagesList[0].map((message) => {
+      postprocess: (messagesList) =>
+        messagesList.flat().map((message) => {
           if (message.ruleId === "@typescript-eslint/naming-convention") {
             return {
               ...message,
@@ -199,7 +199,8 @@ export const getEslintConfig = ({
           }
           return message;
         }),
-    },
+      supportsAutofix: true,
+    } satisfies Processor.ProcessorModule,
     rules: {
       "@typescript-eslint/consistent-type-imports": [
         "warn",
@@ -338,11 +339,12 @@ export const getEslintConfig = ({
     processor: {
       preprocess: (text) => [text],
       postprocess: (messages) =>
-        messages[0].map((message: any) => ({
+        messages.flat().map((message) => ({
           ...message,
           severity: 1, // 1 is 'warn', 2 is 'error'
         })),
-    },
+      supportsAutofix: true,
+    } satisfies Processor.ProcessorModule,
   };
 
   /**
