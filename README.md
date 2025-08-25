@@ -28,12 +28,22 @@ Install dependencies:
 npm install --save-dev prettier eslint @stanfordspezi/spezi-web-configurations
 ```
 
-Create `eslint.config.js` file:
+Create `eslint.config.js` file.
+
+If aiming for React, use:
 
 ```javascript
-const { getEslintConfig } = require('@stanfordspezi/spezi-web-configurations')
+const { getEslintReactConfig } = require('@stanfordspezi/spezi-web-configurations')
 
-module.exports = getEslintConfig({ tsconfigRootDir: __dirname })
+module.exports = getEslintReactConfig({ tsconfigRootDir: __dirname })
+```
+
+If aiming for Node application, use:
+
+```javascript
+const { getEslintNodeConfig } = require('@stanfordspezi/spezi-web-configurations')
+
+module.exports = getEslintNodeConfig({ tsconfigRootDir: __dirname })
 ```
 
 Create `.prettierrc.js` file:
@@ -45,6 +55,60 @@ module.exports = prettierConfig;
 ```
 
 Now, when you run `eslint . --fix`, code is going to be linted and formatted. 
+
+
+### ESLint customization
+
+We aim to make this config mostly plug and play. You can adjust ESLint to your needs by passing additional configuration pieces.
+
+```javascript
+module.exports = [
+    ...getEslintNodeConfig({ tsconfigRootDir: __dirname }),
+    {
+        ignores: ["lib/**/*"], // Ignore generated build files
+    },
+    {
+        rules: {
+            "@typescript-eslint/no-non-null-assertion": "off", // ignore unwanted rule
+        },
+    },
+]
+```
+
+
+For more complex scenarios, we expose smaller pieces of configuration. You can use them and do micro-adjustments. This is not the recommended approach.
+
+
+```javascript
+const {
+    getEslintRules,
+    getNodeGlobals,
+    getPreferArrowFunctions,
+    getReactPlugins,
+    getPrettierPlugin,
+    getTslint,
+} = require("@stanfordspezi/spezi-web-configurations");
+const tseslint = require("typescript-eslint");
+
+module.exports = tseslint.config(
+    ...getEslintRules(),
+    getNodeGlobals(),
+    {
+        ...getTslint(),
+        languageOptions: {
+            ecmaVersion: 2020,
+            globals: globals.browser,
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir,
+            },
+        },
+    },
+    getPreferArrowFunctions(),
+    ...getReactPlugins(),
+    ...getPrettierPlugin(),
+);
+```
 
 
 ## License
