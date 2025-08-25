@@ -162,22 +162,12 @@ const getPreferArrowFunctions = (): InfiniteDepthConfigWithExtends => ({
  * It relies on TSC type-checking, which might slow down linting for large codebases.
  * Read more: https://typescript-eslint.io/getting-started/typed-linting/
  * */
-const getTslint = (
-  tsconfigRootDir: string,
-): InfiniteDepthConfigWithExtends => ({
+const getTslint = (): InfiniteDepthConfigWithExtends => ({
   extends: [
     tseslint.configs.strictTypeChecked,
     tseslint.configs.stylisticTypeChecked,
   ],
   files: ["**/*.{ts,tsx}"],
-  languageOptions: {
-    ecmaVersion: 2020,
-    globals: globals.browser,
-    parserOptions: {
-      projectService: true,
-      tsconfigRootDir,
-    },
-  },
   processor: {
     preprocess: (text) => [text],
     postprocess: (messagesList) =>
@@ -349,27 +339,54 @@ export const getEslintConfig = ({
   tsConfigsDirs = [],
   changeEveryRuleToWarning,
 }: EslintConfigParams) => {
-  const ignoredDirs = getIgnoredDirs();
-  const eslintRules = getEslintRules();
-  const importRules = getImportRules(tsConfigsDirs);
-  const nodeGlobals = getNodeGlobals();
-  const tslint = getTslint(tsconfigRootDir);
-  const preferArrowFunctions = getPreferArrowFunctions();
-  const reactPlugins = getReactPlugins();
-  const prettierPlugin = getPrettierPlugin();
-  const ignoreDefaultExportRule = getIgnoreDefaultExportRule();
-  const transformAllRulesToWarn = getTransformAllRulesToWarn();
-
   return tseslint.config(
-    ignoredDirs,
-    ...eslintRules,
-    ...importRules,
-    nodeGlobals,
-    tslint,
-    preferArrowFunctions,
-    ...reactPlugins,
-    prettierPlugin,
-    ignoreDefaultExportRule,
-    changeEveryRuleToWarning ? transformAllRulesToWarn : {},
+    getIgnoredDirs(),
+    ...getEslintRules(),
+    ...getImportRules(tsConfigsDirs),
+    getNodeGlobals(),
+    {
+      ...getTslint(),
+      languageOptions: {
+        ecmaVersion: 2020,
+        globals: globals.browser,
+        parserOptions: {
+          projectService: true,
+          tsconfigRootDir,
+        },
+      },
+    },
+    getPreferArrowFunctions(),
+    ...getReactPlugins(),
+    getPrettierPlugin(),
+    getIgnoreDefaultExportRule(),
+    changeEveryRuleToWarning ? getTransformAllRulesToWarn() : {},
+  );
+};
+
+export const getNodeConfig = ({
+  tsconfigRootDir,
+  tsConfigsDirs = [],
+  changeEveryRuleToWarning,
+}: EslintConfigParams) => {
+  return tseslint.config(
+    getIgnoredDirs(),
+    ...getEslintRules(),
+    ...getImportRules(tsConfigsDirs),
+    getNodeGlobals(),
+    {
+      ...getTslint(),
+      languageOptions: {
+        ecmaVersion: 2020,
+        globals: globals.node,
+        parserOptions: {
+          projectService: true,
+          tsconfigRootDir,
+        },
+      },
+    },
+    getPreferArrowFunctions(),
+    getPrettierPlugin(),
+    getIgnoreDefaultExportRule(),
+    changeEveryRuleToWarning ? getTransformAllRulesToWarn() : {},
   );
 };
