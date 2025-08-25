@@ -43,14 +43,14 @@ type EslintConfigParams = {
 /**
  * Completely ignores these directories
  * */
-const getIgnoredDirs = (): InfiniteDepthConfigWithExtends => ({
+export const getIgnoredDirs = (): InfiniteDepthConfigWithExtends => ({
   ignores: ["dist", "docs", "out", "coverage", ".next", "**/playwright-report"],
 });
 
 /**
  * Basic recommended ESLint rules with overrides
  * */
-const getEslintRules = (): InfiniteDepthConfigWithExtends[] => [
+export const getEslintRules = (): InfiniteDepthConfigWithExtends[] => [
   eslint.configs.recommended,
   { rules: { "no-empty-pattern": "off" } },
 ];
@@ -59,7 +59,7 @@ const getEslintRules = (): InfiniteDepthConfigWithExtends[] => [
  * Rules for import plugin.
  * Auto rules reordering, prevents cycles, forces lack of extensions.
  * */
-const getImportRules = (
+export const getImportRules = (
   tsConfigsDirs: string[],
 ): InfiniteDepthConfigWithExtends[] => [
   importPlugin.flatConfigs.recommended,
@@ -118,7 +118,7 @@ const getImportRules = (
 /**
  * Injects Node globals for Node-based configuration files
  * */
-const getNodeGlobals = (): InfiniteDepthConfigWithExtends => ({
+export const getNodeGlobals = (): InfiniteDepthConfigWithExtends => ({
   files: [
     "**/eslint.config.?(c)js",
     "**/.prettierrc.?(c)js",
@@ -134,7 +134,7 @@ const getNodeGlobals = (): InfiniteDepthConfigWithExtends => ({
  * Enforces arrow functions instead of named function
  * Automatically replaces every named function with an arrow function.
  * */
-const getPreferArrowFunctions = (): InfiniteDepthConfigWithExtends => ({
+export const getPreferArrowFunctions = (): InfiniteDepthConfigWithExtends => ({
   files: ["**/*.{js,jsx,ts,tsx}"],
   plugins: {
     "prefer-arrow-functions": preferArrow,
@@ -162,7 +162,7 @@ const getPreferArrowFunctions = (): InfiniteDepthConfigWithExtends => ({
  * It relies on TSC type-checking, which might slow down linting for large codebases.
  * Read more: https://typescript-eslint.io/getting-started/typed-linting/
  * */
-const getTslint = (): InfiniteDepthConfigWithExtends => ({
+export const getTslint = (): InfiniteDepthConfigWithExtends => ({
   extends: [
     tseslint.configs.strictTypeChecked,
     tseslint.configs.stylisticTypeChecked,
@@ -263,7 +263,7 @@ const getTslint = (): InfiniteDepthConfigWithExtends => ({
 /**
  * Configures react, react hooks plugin and customized rules
  * */
-const getReactPlugins = (): InfiniteDepthConfigWithExtends[] => [
+export const getReactPlugins = (): InfiniteDepthConfigWithExtends[] => [
   reactHooks.configs["recommended-latest"],
   {
     ...reactPlugin.configs.flat.recommended,
@@ -296,43 +296,47 @@ const getReactPlugins = (): InfiniteDepthConfigWithExtends[] => [
 /**
  * Disables default export rule for tools that need to use it.
  * */
-const getIgnoreDefaultExportRule = (): InfiniteDepthConfigWithExtends => ({
-  files: [
-    "{app,pages}/**/*.ts?(x)", // app or pages directories for Next codebases
-    "**/playwright.config.ts",
-    "**/tailwind.config.ts",
-    "**/vite.config.ts",
-    "**/*.stories.ts?(x)",
-    "**/.storybook/**/*.ts?(x)",
-    "**/.prettierrc.{ts,js}",
-    "**/eslint.config.{ts,js}",
-  ],
-  rules: {
-    "import/no-default-export": "off",
-  },
-});
+export const getIgnoreDefaultExportRule =
+  (): InfiniteDepthConfigWithExtends => ({
+    files: [
+      "{app,pages}/**/*.ts?(x)", // app or pages directories for Next codebases
+      "**/playwright.config.ts",
+      "**/tailwind.config.ts",
+      "**/vite.config.ts",
+      "**/*.stories.ts?(x)",
+      "**/.storybook/**/*.ts?(x)",
+      "**/.prettierrc.{ts,js}",
+      "**/eslint.config.{ts,js}",
+    ],
+    rules: {
+      "import/no-default-export": "off",
+    },
+  });
 
 /**
  * Transforms ALL rules severities to 'warn'
  * */
-const getTransformAllRulesToWarn = (): InfiniteDepthConfigWithExtends => ({
-  rules: {},
-  languageOptions: {},
-  processor: {
-    preprocess: (text) => [text],
-    postprocess: (messages) =>
-      messages.flat().map((message) => ({
-        ...message,
-        severity: 1, // 1 is 'warn', 2 is 'error'
-      })),
-    supportsAutofix: true,
-  } satisfies Processor.ProcessorModule,
-});
+export const getTransformAllRulesToWarn =
+  (): InfiniteDepthConfigWithExtends => ({
+    rules: {},
+    languageOptions: {},
+    processor: {
+      preprocess: (text) => [text],
+      postprocess: (messages) =>
+        messages.flat().map((message) => ({
+          ...message,
+          severity: 1, // 1 is 'warn', 2 is 'error'
+        })),
+      supportsAutofix: true,
+    } satisfies Processor.ProcessorModule,
+  });
 
 /**
  * Forces correct prettier formatting with auto-fix support
  * */
-const getPrettierPlugin = () => eslintPluginPrettierRecommended;
+const getPrettierPlugin = (): InfiniteDepthConfigWithExtends[] => [
+  eslintPluginPrettierRecommended,
+];
 
 export const getEslintReactConfig = ({
   tsconfigRootDir,
@@ -357,7 +361,7 @@ export const getEslintReactConfig = ({
     },
     getPreferArrowFunctions(),
     ...getReactPlugins(),
-    getPrettierPlugin(),
+    ...getPrettierPlugin(),
     getIgnoreDefaultExportRule(),
     changeEveryRuleToWarning ? getTransformAllRulesToWarn() : {},
   );
@@ -385,7 +389,7 @@ export const getEslintNodeConfig = ({
       },
     },
     getPreferArrowFunctions(),
-    getPrettierPlugin(),
+    ...getPrettierPlugin(),
     getIgnoreDefaultExportRule(),
     changeEveryRuleToWarning ? getTransformAllRulesToWarn() : {},
   );
