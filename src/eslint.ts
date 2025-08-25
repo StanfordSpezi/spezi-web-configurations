@@ -334,7 +334,7 @@ const getTransformAllRulesToWarn = (): InfiniteDepthConfigWithExtends => ({
  * */
 const getPrettierPlugin = () => eslintPluginPrettierRecommended;
 
-export const getEslintConfig = ({
+export const getEslintReactConfig = ({
   tsconfigRootDir,
   tsConfigsDirs = [],
   changeEveryRuleToWarning,
@@ -363,7 +363,7 @@ export const getEslintConfig = ({
   );
 };
 
-export const getNodeConfig = ({
+export const getEslintNodeConfig = ({
   tsconfigRootDir,
   tsConfigsDirs = [],
   changeEveryRuleToWarning,
