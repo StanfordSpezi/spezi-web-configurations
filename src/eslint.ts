@@ -264,7 +264,7 @@ export const getTslint = (): InfiniteDepthConfigWithExtends => ({
  * Configures react, react hooks plugin and customized rules
  * */
 export const getReactPlugins = (): InfiniteDepthConfigWithExtends[] => [
-  reactHooks.configs["recommended-latest"],
+  reactHooks.configs.flat["recommended-latest"],
   {
     ...reactPlugin.configs.flat.recommended,
     settings: {
